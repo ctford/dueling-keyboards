@@ -6,7 +6,7 @@
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
             [leipzig.chord :as chord]
-            [leipzig.temperament :as temperament]))
+            [dueling-keyboards.talk :refer [equal-temperament]]))
 
 (defmacro defs  [names values]
   `(do
@@ -75,7 +75,7 @@
 
 (defmethod live/play-note :default
   [{midi :pitch seconds :duration}]
-  (some-> midi midi->hz (overchauffeur seconds)))
+  (some-> midi equal-temperament (overchauffeur seconds)))
 
 (defn book [initial]
   (({\G (sample "samples/godel.wav" :start 4000)

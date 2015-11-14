@@ -44,7 +44,7 @@ References
 * [Ford, Chris](https://twitter.com/ctford): [Functional Composition](http://www.infoq.com/presentations/music-functional-language)
 * [Ford, Chris](https://twitter.com/ctford): [Kolmogorov Music](https://github.com/ctford/kolmogorov-music)
 * [Ford, Chris](https://twitter.com/ctford): [Leipzig](https://github.com/ctford/leipzig)
-* [Hofstadter, Douglas](https://en.wikipedia.org/wiki/Douglas_Hofstadter]: [Gödel, Escher, Bach](https://en.wikipedia.org/wiki/G%C3%B6del,_Escher,_Bach)
+* [Hofstadter, Douglas](https://en.wikipedia.org/wiki/Douglas_Hofstadter): [Gödel, Escher, Bach](https://en.wikipedia.org/wiki/G%C3%B6del,_Escher,_Bach)
 * [Kolmogorov, Andrey](https://en.wikipedia.org/wiki/Andrey_Kolmogorov): [On Tables of Random Numbers](http://ac.els-cdn.com/S0304397598000759/1-s2.0-S0304397598000759-main.pdf?_tid=6dc3b614-5004-11e5-b948-00000aab0f6b&acdnat=1441041745_1e998b3dbaa07510ac59a2628384fc9b)
 * [Meredith, David](http://www.titanmusic.com/): [Analysis by compression: automatic generation of compact geometric encodings of musical objects](http://www.titanmusic.com/papers/public/MeredithMEC2013ProceedingsPaper.pdf)
 * [Meredith, David](http://www.titanmusic.com/): [Music analysis and Kolmogorov complexity](http://www.titanmusic.com/papers/public/cim20121_submission_105.pdf)

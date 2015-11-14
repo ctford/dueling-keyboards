@@ -78,6 +78,12 @@
         fifths [narrow narrow narrow pure pure narrow pure pure pure pure pure]]
     (tune root fifths)))
 
+(defn baganda
+  "Converts midi to hertz using 5-tone equal temperament.
+  e.g. (equal 69)"
+  [root]
+  ((tune 69 (repeat 4 (java.lang.Math/pow 2 1/5))) root))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Analysis by compression ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

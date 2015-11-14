@@ -1,4 +1,4 @@
-(ns kolmogorov-music.geb
+(ns dueling-keyboards.geb
   (:require [overtone.live :refer :all :exclude [stop]]
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
@@ -6,14 +6,34 @@
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
             [leipzig.chord :as chord]
-            [leipzig.temperament :as temperament]
-            [kolmogorov-music.coding :as coding]))
+            [leipzig.temperament :as temperament]))
+
+(defmacro defs  [names values]
+  `(do
+     ~@(map
+         (fn [name value] `(def ~name ~value))
+         names (eval values))))
+
+(def char->ascii int)
+
+(defs [A B C D E F G]
+  (map
+    (comp scale/A scale/low scale/minor)
+    (range)))
+
+(defn ascii->midi  [n]
+  (->> n
+       char
+       str
+       (symbol "dueling-keyboards.geb")
+       find-var
+       deref))
 
 (def geb
   (let [theme (->> "GEB"
-                   (map coding/char->ascii)
+                   (map char->ascii)
                    (phrase [4 4 8])
-                   (canon/canon #(where :pitch coding/ascii->midi %)))
+                   (canon/canon #(where :pitch ascii->midi %)))
         theme2 (->> theme (with (->> (phrase [4 4 8] "GEB") (where :part (is :sample)))))
         bass (phrase [4 4 8] [-2 -1 0])
         bass2 (phrase (repeat 4 4) (cycle [3 0]))

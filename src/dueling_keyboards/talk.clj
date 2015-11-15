@@ -86,11 +86,16 @@
 
 
 (def baganda-scale
-  (->> (phrase (repeat 1) (range 24))
+  (->> (phrase (repeat 1/4) (concat (range 18) [17 17 17 17 18 18] [17 17 17 17 18 18] [17 17 17 12 12 12]))
+       (canon/canon (comp (canon/simple 1/6) (canon/interval -4)))
+       (canon/canon (comp (canon/simple 1/6) (canon/interval -4)))
+       (after -1/3)
+       ;(canon/canon (comp (canon/simple 1/6) (canon/interval -4)))
        (where :pitch baganda)))
 
 (comment
   (live/play baganda-scale)
+  (live/jam (var baganda-scale))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -99,7 +104,7 @@
 
 (defmethod live/play-note :default
   [{hertz :pitch seconds :duration}]
-  (when hertz (instrument/overchauffeur hertz seconds)))
+  (when hertz (instrument/matooke hertz seconds)))
 
 (def row-row
   "A simple melody built from durations and pitches."

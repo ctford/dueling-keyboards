@@ -48,7 +48,7 @@
          ;(with twiddle)
          ;(with decoration)
          ;(with grind)
-         (where :pitch (comp scale/B scale/minor))
+         (where :pitch (comp equal-temperament scale/B scale/minor))
          (with theme)
          (where :time (bpm 90))
          (where :duration (bpm 90)))))
@@ -75,7 +75,7 @@
 
 (defmethod live/play-note :default
   [{midi :pitch seconds :duration}]
-  (some-> midi equal-temperament (overchauffeur seconds)))
+  (some-> midi (overchauffeur seconds)))
 
 (defn book [initial]
   (({\G (sample "samples/godel.wav" :start 4000)

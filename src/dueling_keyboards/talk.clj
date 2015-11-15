@@ -82,7 +82,16 @@
 (defn baganda
   "Converts midi to hertz using 5-tone equal temperament."
   [pitch]
-  (/ (* concert-a 16) (reduce * (repeat pitch (java.lang.Math/pow 2 1/5)))))
+  (/ (* concert-a 4) (reduce * (repeat pitch (java.lang.Math/pow 2 1/5)))))
+
+
+(def baganda-scale
+  (->> (phrase (repeat 1) (range 24))
+       (where :pitch baganda)))
+
+(comment
+  (live/play baganda-scale)
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Analysis by compression ;;;
@@ -90,7 +99,7 @@
 
 (defmethod live/play-note :default
   [{hertz :pitch seconds :duration}]
-  (when hertz (instrument/overchauffeur (equal-temperament hertz) seconds)))
+  (when hertz (instrument/overchauffeur hertz seconds)))
 
 (def row-row
   "A simple melody built from durations and pitches."
@@ -109,7 +118,7 @@
          (phrase [2/3  1/3  2/3  1/3  6/3]
                  [  4    3    2    1    0]))
        (canon/canon (canon/simple 4))
-       (where :pitch (comp scale/A scale/major))))
+       (where :pitch (comp equal-temperament scale/A scale/major))))
 
 (comment
   (live/play row-row)

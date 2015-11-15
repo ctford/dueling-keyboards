@@ -16,7 +16,8 @@
   from a pure 2/1 ratio."
   531441/524288)
 
-(defn align-concert-a [tuning] (fn [midi] (-> midi tuning (* (/ 440 (tuning 69))))))
+(def concert-a 440)
+(defn align-concert-a [tuning] (fn [midi] (-> midi tuning (* (/ concert-a (tuning 69))))))
 (defn temper [midi ratios]
   (cond
     (< midi 0) (* 1/2 (temper (+ midi 12) ratios))
@@ -79,10 +80,9 @@
     (tune root fifths)))
 
 (defn baganda
-  "Converts midi to hertz using 5-tone equal temperament.
-  e.g. (equal 69)"
-  [root]
-  ((tune 69 (repeat 4 (java.lang.Math/pow 2 1/5))) root))
+  "Converts midi to hertz using 5-tone equal temperament."
+  [pitch]
+  (/ (* concert-a 16) (reduce * (repeat pitch (java.lang.Math/pow 2 1/5)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Analysis by compression ;;;

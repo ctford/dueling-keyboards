@@ -10,12 +10,15 @@
 
 (def dueling
   (->>
-    (times 2 (phrase (mapcat repeat [2 6 1] [1/4 1/2 5]) [2 3 4 2 3 1 2 0 1]))
-    (then (times 2 (phrase (mapcat repeat [6 1] [1/2 5]) [0 0 1 2 0 2 1])))
-    (then (times 2 (phrase [1/4 1/4 1/2 1/2 1/2 4/2] [chord/triad chord/triad chord/triad (chord/root chord/triad 3) chord/triad -7])))
-    (where :time (bpm 75))
-    (where :duration (bpm 75))
+    (times 2 (phrase (mapcat repeat [2 6 1 1] [1/4 1/2 1 4]) [2 3 4 2 3 1 2 0 1 nil]))
+    (then (times 2 (phrase (mapcat repeat [6 1 1] [1/2 1 4]) [0 0 1 2 0 2 1 nil])))
+    (then (times 2 (phrase [1/4 1/4 1/2 1/2 1/2 2] [chord/triad chord/triad chord/triad (chord/root chord/triad 3) chord/triad nil])))
+    (tempo (bpm 75))
     (where :pitch (comp equal-temperament scale/G scale/major))))
+
+(comment
+  (live/jam (var dueling))
+  )
 
 (def sec (-> chord/triad (chord/inversion 2) (dissoc :i)))
 
@@ -45,11 +48,11 @@
          (then (times 2 (with chorus (phrase [8 6 1 1 8 4 2 1 1] [12 11 12 13 12 14 13 12 11]))))
          (then (times 3 tail))
          (then (times 2 plain))
-         (where :time (bpm 150))
-         (where :duration (bpm 150))
+         (tempo (bpm 150))
          (where :pitch (comp equal-temperament scale/C scale/major)))))
 
 (comment
+  (live/jam (var im-not-worried))
   (map fx-chorus [0 1])
   (map fx-distortion [0 1] [0.8 0.6] [0.3 0.5])
   (volume 0.8)
@@ -65,7 +68,7 @@
       (* 3)
       (clip2 0.8)
       (rlpf (line:kr 2000 1000))
-      (* (env-gen (adsr 0.5 0.2 0.6 0.1) (line:kr 1 0 dur) :action FREE))
+      (* (env-gen (adsr 0.5 0.2 0.5 0.1) (line:kr 1 0 dur) :action FREE))
       (* vol)))
 
 (defmethod live/play-note :default

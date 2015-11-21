@@ -1,5 +1,5 @@
 (ns dueling-keyboards.talk
-  (:require [overtone.live :refer :all :exclude [stop]]
+  (:require [overtone.live :refer :all :exclude [stop exp]]
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
             [leipzig.scale :as scale]
@@ -14,6 +14,10 @@
 (def pythagorean-comma
   "The difference between an octave constructed out of pure fifths and 2/1."
   531441/524288)
+
+;;;;;;;;;;;;;;;;;;;;;;
+;;; Tuning systems ;;;
+;;;;;;;;;;;;;;;;;;;;;;
 
 (def concert-a 440)
 (defn align-concert-a
@@ -56,29 +60,37 @@
         fifths [narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow]]
     (tune fifths)))
 
+;;;;;;;;;;;;;;
+;;; Norman ;;;
+;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Kolmogorov complexity ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;
+;;; Baganda ;;;
+;;;;;;;;;;;;;;;
+
 (defn baganda-temperament
   "Converts midi to hertz, using a five tone version of equal temperament."
   [pitch]
   (/ (* concert-a 4) (reduce * (repeat pitch (java.lang.Math/pow 2 1/5)))))
 
-(def baganda-scale
+(def akadinda
   (->> (phrase (repeat 1/4) (concat (range 18) [17 17 17 17 18 18] [17 17 17 17 18 18] [17 17 17 12 12 12]))
        (canon/canon (comp (canon/simple 1/6) (canon/interval -4)))
        (canon/canon (comp (canon/simple 1/6) (canon/interval -4)))
        (where :pitch baganda-temperament)))
 
 (comment
-  (live/play baganda-scale)
-  (live/jam (var baganda-scale))
+  (live/play akadinda)
+  (live/jam (var akadinda))
 )
 
-;;;;;;;;;;;;;;
-;;; Norman ;;;
-;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Analysis by compression ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Functional composition ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod live/play-note :default
   [{hertz :pitch seconds :duration}]

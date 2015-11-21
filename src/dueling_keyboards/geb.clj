@@ -11,10 +11,11 @@
 
 (def dueling
   (->>
-    (phrase (mapcat repeat [2 6 1] [1/4 1/2 5]) [2 3 4 2 3 1 2 0 1])
-    (then (phrase (mapcat repeat [6 1] [1/2 5]) [0 0 1 2 0 2 1]))
-    (where :time (bpm 60))
-    (where :duration (bpm 60))
+    (times 2 (phrase (mapcat repeat [2 6 1] [1/4 1/2 5]) [2 3 4 2 3 1 2 0 1]))
+    (then (times 2 (phrase (mapcat repeat [6 1] [1/2 5]) [0 0 1 2 0 2 1])))
+    (then (times 2 (phrase [1/4 1/4 1/2 1/2 1/2 4/2] [chord/triad chord/triad chord/triad (chord/root chord/triad 3) chord/triad -7])))
+    (where :time (bpm 90))
+    (where :duration (bpm 90))
     (where :pitch (comp equal-temperament scale/G scale/major))))
 
 (defmacro defs  [names values]
@@ -79,7 +80,7 @@
       (+ (* 1/8 (sin-osc 2/3) (sin-osc (* 5.01 freq))))
       (+ (* 2 (sin-osc 8/3) (sin-osc (* 0.5 freq))))
       (clip2 0.6)
-      (rlpf (line:kr 2000 1000 dur))
+      (rlpf (line:kr 2000 1000 0.5))
       (* (env-gen (adsr 0.01 0.3 0.3 0.2) (line:kr 1 0 dur) :action FREE))
       (* vol)))
 

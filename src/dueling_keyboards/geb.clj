@@ -18,6 +18,38 @@
     (where :duration (bpm 90))
     (where :pitch (comp equal-temperament scale/G scale/major))))
 
+(def sec (-> chord/triad (chord/inversion 2) (dissoc :i)))
+
+(def im-not-worried
+  (let [chorus (->>
+                 (phrase (cycle [5/2 1/2 1/2 1/2]) [[-2 3.5] -2 1 0 [-2 3] -2 1 0 [-3 2] -3 1 0 [-3 1] -3 1 0])
+                 (with (->> (phrase (repeat 1/2) (mapcat repeat (cycle [6 1 1]) [1 1 2 3 2 1 0 -1 -2 -3 1 -3])) (where :pitch scale/lower)))
+                 (times 2))
+        plain (->> (phrase (repeat 32 1/2) (repeat -3))
+                   (with (phrase (repeat 4) [1 0.5 0 -0.5])))
+        variation (->> plain
+                       (canon/canon (canon/interval -7))
+                       (where :pitch scale/lower)
+                       (with (phrase (repeat 4)
+                                     [(-> sec (chord/root -3))
+                                      (-> sec (chord/root -2) (update-in [:iii] (scale/from 0.5)))
+                                      (-> sec (chord/root -2))
+                                      (-> sec (chord/root -3))]))
+                       (where :pitch (comp scale/raise scale/raise)))
+        tail (->> (phrase (repeat 8 1/2) (cycle [-3 -3 -3 -3 -3 -3 1 -3]))
+                        (where :pitch scale/lower)
+                        (with (phrase [5/2 1/2 1/2 1/2] [[-3 1] -2 1 0]) )
+                        )]
+    (->> (times 2 chorus )
+         (then (times 3 tail))
+         (then (times 4 variation))
+         (then (times 2 (with chorus (phrase [8 6 1 1 8 4 2 1 1] [12 11 12 13 12 14 13 12 11]))))
+         (then (times 3 tail))
+         (then (times 2 plain))
+         (where :time (bpm 150))
+         (where :duration (bpm 150))
+         (where :pitch (comp equal-temperament scale/C scale/major)))))
+
 (defmacro defs  [names values]
   `(do
      ~@(map
@@ -75,13 +107,14 @@
 ; Instrumentation
 (definst overchauffeur [freq 110 dur 1.0 vol 0.5]
   (-> (sin-osc freq)
-      (+ (* 1/3 (sin-osc 8/3) (sin-osc (* 2.01 freq))))
-      (+ (* 1/2 (sin-osc 1/3) (sin-osc (* 3.01 freq))))
-      (+ (* 1/8 (sin-osc 2/3) (sin-osc (* 5.01 freq))))
-      (+ (* 2 (sin-osc 8/3) (sin-osc (* 0.5 freq))))
-      (clip2 0.6)
-      (rlpf (line:kr 2000 1000 0.5))
-      (* (env-gen (adsr 0.01 0.3 0.3 0.2) (line:kr 1 0 dur) :action FREE))
+      (+ (* 1/3 (sin-osc 4/3) (sin-osc (* 2.01 freq))))
+      (+ (* 1/2 (sin-osc 8/3) (sin-osc (* 3.01 freq))))
+      (+ (* 1/8 (sin-osc 1/3) (sin-osc (* 5.01 freq))))
+      (+ (* 2 (sin-osc 1) (sin-osc (* 0.5 freq))))
+      (* 3)
+      (clip2 0.8)
+      (rlpf (line:kr 2000 1000))
+      (* (env-gen (adsr 0.5 0.2 0.3 0.1) (line:kr 1 0 dur) :action FREE))
       (* vol)))
 
 (defmethod live/play-note :default

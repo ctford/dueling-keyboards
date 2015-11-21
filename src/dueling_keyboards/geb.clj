@@ -8,6 +8,15 @@
             [leipzig.chord :as chord]
             [dueling-keyboards.talk :refer [equal-temperament]]))
 
+
+(def dueling
+  (->>
+    (phrase (mapcat repeat [2 6 1] [1/4 1/2 5]) [2 3 4 2 3 1 2 0 1])
+    (then (phrase (mapcat repeat [6 1] [1/2 5]) [0 0 1 2 0 2 1]))
+    (where :time (bpm 60))
+    (where :duration (bpm 60))
+    (where :pitch (comp equal-temperament scale/G scale/major))))
+
 (defmacro defs  [names values]
   `(do
      ~@(map
@@ -48,8 +57,9 @@
          ;(with twiddle)
          ;(with decoration)
          ;(with grind)
-         (where :pitch (comp equal-temperament scale/B scale/minor))
+         (where :pitch (comp scale/B scale/minor))
          (with theme)
+         (where :pitch equal-temperament)
          (where :time (bpm 90))
          (where :duration (bpm 90)))))
 
@@ -64,13 +74,13 @@
 ; Instrumentation
 (definst overchauffeur [freq 110 dur 1.0 vol 0.5]
   (-> (sin-osc freq)
-      (+ (* 1/3 (sin-osc (* 2.01 freq))))
-      (+ (* 1/2 (sin-osc (* 3.01 freq))))
-      (+ (* 1/8 (sin-osc (* 5.01 freq))))
-      (+ (* 2 (sin-osc (* 0.5 freq))))
-      (clip2 0.7)
-      (lpf 1500)
-      (* (env-gen (adsr 0.01 0.3 0.9 0.2) (line:kr 1 0 dur) :action FREE))
+      (+ (* 1/3 (sin-osc 8/3) (sin-osc (* 2.01 freq))))
+      (+ (* 1/2 (sin-osc 1/3) (sin-osc (* 3.01 freq))))
+      (+ (* 1/8 (sin-osc 2/3) (sin-osc (* 5.01 freq))))
+      (+ (* 2 (sin-osc 8/3) (sin-osc (* 0.5 freq))))
+      (clip2 0.6)
+      (rlpf (line:kr 2000 1000 dur))
+      (* (env-gen (adsr 0.01 0.3 0.3 0.2) (line:kr 1 0 dur) :action FREE))
       (* vol)))
 
 (defmethod live/play-note :default

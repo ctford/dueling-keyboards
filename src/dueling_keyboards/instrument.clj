@@ -12,3 +12,9 @@
       (* (env-gen (adsr 0.01 0.05 0.15 0.2) (line:kr 1 0 dur) :action FREE))
       (+ (* (env-gen (perc 0.02 0.03)) (* 1/3 (sin-osc (* 0.5 freq)))))
       (* vol)))
+
+(definst simple [freq 440 dur 1.0 vol 0.5]
+  (-> (square freq)
+      (lpf 1500)
+      (* (env-gen (adsr 0.01 0.2 5 0.2) (line:kr 1 0 dur) :action FREE))
+      (* vol)))

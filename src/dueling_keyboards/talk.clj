@@ -2,6 +2,7 @@
   (:require [overtone.live :refer :all :exclude [stop exp]]
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
+            [leipzig.chord :as chord]
             [leipzig.scale :as scale]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
@@ -40,7 +41,19 @@
         fifths [narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow]]
     (tuning/tune fifths)))
 
-; TODO: Demo of tuning.
+(defmethod live/play-note :simple
+  [{hertz :pitch seconds :duration}]
+  (when hertz (instrument/simple hertz seconds)))
+
+(comment
+  (let [interval [7 11]]
+    (->>
+      (->> (phrase [3 1] [interval nil]) (where :pitch pythagorean-tuning))
+      (then (->> (phrase [3 1] [interval nil]) (where :pitch meantone-temperament)))
+      (then (->> (phrase [3 1] [interval nil]) (where :pitch equal-temperament)))
+      (all :part :simple)
+      live/play))
+  )
 
 ;;;;;;;;;;;;;;
 ;;; Norman ;;;
@@ -93,11 +106,15 @@
          (phrase [2/3  1/3  2/3  1/3  6/3]
                  [  4    3    2    1    0]))
        (canon/canon (canon/simple 4))
-       (where :pitch (comp equal-temperament scale/A scale/major))))
+       (where :pitch (comp scale/low scale/A scale/sharp scale/major))
+       (all :part :simple)))
 
 ; TODO: Add Kolmogorov complexity macros.
 
 (comment
-  (live/play row-row)
-  (live/jam (var row-row))
-)
+  (->> row-row
+       ;(where :pitch pythagorean-tuning)
+       (where :pitch meantone-temperament)
+       ;(where :pitch equal-temperament)
+       (live/play ))
+  )

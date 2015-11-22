@@ -5,7 +5,8 @@
             [leipzig.scale :as scale]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
-            [dueling-keyboards.instrument :as instrument]))
+            [dueling-keyboards.instrument :as instrument]
+            [dueling-keyboards.tuning :as tuning]))
 
 ;;;;;;;;;;;;;;;;;;
 ;;; Pythagoras ;;;
@@ -19,47 +20,25 @@
 ;;; Tuning systems ;;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-; TODO: Hide away utilities.
-(def concert-a 440)
-(defn align-concert-a
-  [tuning]
-  (fn [midi] (-> midi (- 69) tuning (* concert-a))))
-
-(defn temper
-  [midi ratios]
-  (cond
-    (< midi 0) (* 1/2 (temper (+ midi 12) ratios))
-    (> midi 11) (* 2 (temper (- midi 12) ratios))
-    :otherwise (nth ratios midi)))
-
-(defn tune
-  [incremental-ratios]
-  (let [root 69
-        geometric-progression (partial reductions * 1)
-        ratios (->> (geometric-progression incremental-ratios)
-                    (map (fn normalise [ratio] (if (< ratio 2) ratio (normalise (/ ratio 2)))))
-                    sort)]
-    (align-concert-a #(temper % ratios))))
-
 (def pythagorean-tuning
   "Converts midi to hertz, putting the entire Pythagorean comma into one ghastly interval."
   (let [pure 3/2
         wolf (/ pure pythagorean-comma)
         fifths [pure pure pure pure pure pure pure wolf pure pure pure]]
-    (tune fifths)))
+    (tuning/tune fifths)))
 
 (def meantone-temperament
   "Converts midi to hertz, using a variant of Pythagorean tuning designed to get a consonant major third."
   (let [narrow (java.lang.Math/pow 5 1/4)
         wolf (* narrow 128/125)
         fifths [narrow narrow narrow narrow narrow narrow narrow wolf narrow narrow narrow]]
-    (tune fifths)))
+    (tuning/tune fifths)))
 
 (def equal-temperament
   "Converts midi to hertz, spreading out the Pythagorean comma evenly across all the intervals."
   (let [narrow (java.lang.Math/pow 2 7/12)
         fifths [narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow]]
-    (tune fifths)))
+    (tuning/tune fifths)))
 
 ; TODO: Demo of tuning.
 
@@ -76,7 +55,7 @@
 (defn baganda-temperament
   "Converts midi to hertz, using a five tone version of equal temperament."
   [pitch]
-  (/ (* concert-a 4) (reduce * (repeat pitch (java.lang.Math/pow 2 1/5)))))
+  (/ (* tuning/concert-a 4) (reduce * (repeat pitch (java.lang.Math/pow 2 1/5)))))
 
 (def akadinda
   (->> (phrase (repeat 1/4) (concat (range 18) [17 17 17 17 18 18] [17 17 17 17 18 18] [17 17 17 12 12 12]))

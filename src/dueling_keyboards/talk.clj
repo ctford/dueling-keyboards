@@ -19,6 +19,7 @@
 ;;; Tuning systems ;;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+; TODO: Hide away utilities.
 (def concert-a 440)
 (defn align-concert-a
   [tuning]
@@ -60,13 +61,13 @@
         fifths [narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow narrow]]
     (tune fifths)))
 
+; TODO: Demo of tuning.
+
 ;;;;;;;;;;;;;;
 ;;; Norman ;;;
 ;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Kolmogorov complexity ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; See picture.
 
 ;;;;;;;;;;;;;;;
 ;;; Baganda ;;;
@@ -114,6 +115,8 @@
                  [  4    3    2    1    0]))
        (canon/canon (canon/simple 4))
        (where :pitch (comp equal-temperament scale/A scale/major))))
+
+; TODO: Add Kolmogorov complexity macros.
 
 (comment
   (live/play row-row)

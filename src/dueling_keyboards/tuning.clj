@@ -18,6 +18,9 @@
   (let [root 69
         geometric-progression (partial reductions * 1)
         ratios (->> (geometric-progression incremental-ratios)
-                    (map (fn normalise [ratio] (if (< ratio 2) ratio (normalise (/ ratio 2)))))
+                    (map (fn normalise [ratio]
+                           (if (< ratio 2)
+                             ratio
+                             (normalise (/ ratio 2)))))
                     sort)]
     (align-concert-a #(temper % ratios))))

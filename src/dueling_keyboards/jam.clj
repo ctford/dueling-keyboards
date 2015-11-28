@@ -42,7 +42,7 @@
                         (where :pitch scale/lower)
                         (with (phrase [5/2 1/2 1/2 1/2] [[-3 1] -2 1 0]) )
                         )]
-    (->> (times 2 chorus )
+    (->> (times 2 chorus)
          (then (times 3 tail))
          (then (times 4 variation))
          (then (times 2 (with chorus (phrase [8 6 1 1 8 4 2 1 1] [12 11 12 13 12 14 13 12 11]))))

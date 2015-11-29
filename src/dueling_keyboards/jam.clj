@@ -10,13 +10,10 @@
              [equal-temperament pythagorean-tuning]]))
 
 (comment
-  (def groove dueling)
-  (def groove im-not-worried)
-
-  (live/jam (var groove))
+  (live/jam (var dueling))
+  (live/jam (var im-not-worried))
 
   (map fx-chorus [0 1])
-  (map fx-distortion [0 1] [0.8 0.9] [0.3 0.5])
   (volume 0.8)
 )
 
@@ -49,23 +46,21 @@
                   (where :pitch scale/lower))
         chorus (->> (with bass riff)
                     (times 2))
-        plain (->> (phrase [16] [[-3 -10 -17]])
+        plain (->> (phrase [16] [[-3 -10]])
                    (with (phrase (repeat 64 1/4)
                                  (mapcat #(take 16
-                                                (cycle [%2 %1 4 %1]))
-                                         [-1 0.5 0 -1]
-                                         [1 2 2 1])))
+                                                (cycle [%2 %1 11 %1]))
+                                         [6 7.5 7 6]
+                                         [8 9 9 8])))
                    (with (phrase (repeat 4) [8 7.5 7 6.5])))
-        vary (->> (phrase (repeat 32 1/2) (repeat [-3 -17]))
-                  (canon/canon (canon/interval -7))
-                  (where :pitch scale/lower)
-                  (with (phrase (repeat 4)
-                                [(-> sec (chord/root -3))
-                                 (-> sec (chord/root -2)
-                                     (update-in [:iii] + 0.5))
-                                 (-> sec (chord/root -2))
-                                 (-> sec (chord/root -3))]))
-                  (where :pitch (comp scale/raise scale/raise)))
+        chords (phrase (repeat 4)
+                          [(-> sec (chord/root 4))
+                           (-> sec (chord/root 5)
+                               (update-in [:iii] + 0.5))
+                           (-> sec (chord/root 5))
+                           (-> sec (chord/root 4))])
+        scene (phrase (repeat 32 1/2) (repeat [-3 -10]))
+        vary (with scene chords)
         tail (->> (phrase (repeat 8 1/2)
                           (cycle [-3 -3 -3 -3 -3 -3 1 -3]))
                   (where :pitch scale/lower)

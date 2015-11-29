@@ -27,6 +27,7 @@
 
 
 
+
 ;;;;;;;;;;;;;;;;;;
 ;;; Sine waves ;;;
 ;;;;;;;;;;;;;;;;;;
@@ -94,6 +95,16 @@
                 narrow wolf narrow narrow narrow]]
     (tuning/tune fifths)))
 
+
+
+
+
+
+
+
+
+
+
 (def equal-temperament
   "Converts midi to hertz, spreading out the Pythagorean comma
    evenly across all the intervals."
@@ -105,22 +116,26 @@
 
 
 
+
+
+
+
+
+
+
+
 (comment
   (let [interval (phrase [1/2 1/2 3 1] [45 52 [45 52] nil]) ]
     (->>
-      (->> interval
-           (where :pitch pythagorean-tuning))
+      interval (where :pitch pythagorean-tuning)
 
       (then
-        (->> interval
-             (where :pitch meantone-temperament)))
+        (->> interval (where :pitch meantone-temperament)))
 
       (then
-        (->> interval
-             (where :pitch equal-temperament)))
+        (->> interval (where :pitch equal-temperament)))
 
-      live/play))
-)
+      live/play)))
 
 
 
@@ -138,20 +153,18 @@
 
 (def akadinda
   (->> (phrase (repeat 1/4)
-               (concat (range 18)
-                       [17 17 17 17 18 18]
-                       [17 17 17 17 18 18]
-                       [17 17 17 12 12 12]))
+               (concat
+                 (range 18)
+                 (mapcat repeat [4 2 4 2 3 3] [17 18 17 18 17 12])))
        (canon/canon
          (comp (canon/simple 1/6) (canon/interval -4)))
        (canon/canon
-         (comp (canon/simple 1/6) (canon/interval -4)))
-       (where :pitch baganda-temperament)
-       ))
+         (comp (canon/simple 1/6) (canon/interval -4)))))
 
 (comment
-  (live/play akadinda)
-)
+  (->> akadinda
+       (where :pitch baganda-temperament)
+       live/play))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Functional composition ;;;
@@ -175,13 +188,13 @@
                  [  4    3    2    1    0]))
        (canon/canon #(->> ((canon/simple 4) %)
                           (canon/canon (canon/simple 4))))
-       (where :pitch (comp low A major))))
+       (where :pitch (comp low A sharp major))))
 
 (comment
   (->> row-row
        ;(where :pitch pythagorean-tuning)
-       ;(where :pitch meantone-temperament)
-       (where :pitch equal-temperament)
+       (where :pitch meantone-temperament)
+       ;(where :pitch equal-temperament)
        live/play)
 )
 

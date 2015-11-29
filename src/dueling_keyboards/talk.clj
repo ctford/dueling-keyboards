@@ -9,14 +9,32 @@
             [leipzig.live :refer [stop]]
             [dueling-keyboards.tuning :as tuning]))
 
+;;;;;;;;;;;;;;;;;;;;;;;
+;;; Getting started ;;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
+#_
+
+(defn play-melody [melody metro start] ( do
+  (def duration (/ (* 2 (beat-length metro)) 1000))
+  (defn play-note [note] (organ-cornet note duration))
+  (if (not (empty? melody)) (do
+    (at (metro start) (play-note (midi->hz (note (first melody)))))
+    (play-melody  (rest melody) metro  (+ start 2))
+  ))
+))
+
+
+
+
 ;;;;;;;;;;;;;;;;;;
 ;;; Sine waves ;;;
 ;;;;;;;;;;;;;;;;;;
 
 (definst chunky [freq 440 dur 5.0 vol 0.5]
-  (* (square freq)
+  (* (lpf (square freq) 1500)
      vol
-     (env-gen (adsr 0.1 0.05 0.15 0.2)
+     (env-gen (adsr 0.03 0.5 0.5 0.2)
               (line:kr 1 0 dur) :action FREE)))
 
 (comment
@@ -88,7 +106,7 @@
 
 
 (comment
-  (let [interval [45 52]]
+  (let [interval [46 50]]
     (->>
       (->> (phrase [3 1] [interval nil])
            (where :pitch pythagorean-tuning))
@@ -129,7 +147,6 @@
        (canon/canon
          (comp (canon/simple 1/6) (canon/interval -4)))
        (where :pitch baganda-temperament)
-       (all :part :simple)
        ))
 
 (comment
@@ -160,13 +177,13 @@
                           (canon/canon (canon/simple 4))))
        (where :pitch scale/lower)
        (where :pitch scale/lower)
-       (where :pitch (comp scale/A scale/sharp scale/major))))
+       (where :pitch (comp scale/A scale/major))))
 
 (comment
   (->> row-row
-       (where :pitch pythagorean-tuning)
+       ;(where :pitch pythagorean-tuning)
        ;(where :pitch meantone-temperament)
-       ;(where :pitch equal-temperament)
+       (where :pitch equal-temperament)
        live/play)
 )
 

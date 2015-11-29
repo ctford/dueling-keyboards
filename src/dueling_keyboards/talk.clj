@@ -1,10 +1,10 @@
 (ns dueling-keyboards.talk
-  (:require [overtone.live :refer :all :exclude [stop exp]]
+  (:require [overtone.live :refer :all :exclude [stop exp sharp flat]]
             [clojure.repl :as repl]
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
             [leipzig.chord :as chord]
-            [leipzig.scale :as scale]
+            [leipzig.scale :refer [A low sharp flat major]]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
             [dueling-keyboards.tuning :as tuning]))
@@ -20,7 +20,7 @@
   (defn play-note [note] (organ-cornet note duration))
   (if (not (empty? melody)) (do
     (at (metro start) (play-note (midi->hz (note (first melody)))))
-    (play-melody  (rest melody) metro  (+ start 2))
+    (play-melody (rest melody) metro (+ start 2))
   ))
 ))
 
@@ -175,9 +175,7 @@
                  [  4    3    2    1    0]))
        (canon/canon #(->> ((canon/simple 4) %)
                           (canon/canon (canon/simple 4))))
-       (where :pitch scale/lower)
-       (where :pitch scale/lower)
-       (where :pitch (comp scale/A scale/major))))
+       (where :pitch (comp low A major))))
 
 (comment
   (->> row-row

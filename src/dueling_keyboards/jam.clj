@@ -11,6 +11,7 @@
 
 (comment
   (live/jam (var dueling))
+  (over-it (* 55 16/9) 12)
   (live/jam (var im-not-worried))
 
   (map fx-chorus [0 1])
@@ -79,7 +80,7 @@
          (where :pitch (comp scale/C scale/major))
          (where :pitch equal-temperament))))
 
-(definst over-it [freq 110 dur 1.0 vol 0.5]
+(definst over-it [freq 440 dur 1.0 vol 0.5]
   (-> (sin-osc freq)
       (+ (* 1/3 (sin-osc 4/3) (sin-osc (* 2.01 freq))))
       (+ (* 1/2 (sin-osc 8/3) (sin-osc (* 3.01 freq))))

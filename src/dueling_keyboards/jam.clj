@@ -54,7 +54,7 @@
                          (cycle [10/4 1 1/4 1/4 4])
                          [[1 6] 4 1 1.5 [2 7.5] [2 7] 5 3 3.5 [4 6]])
                        (times 4))
-        pulse (phrase (repeat 64 1/2) (repeat -3))
+        pulse (phrase [32] [-3])
         postscript (->> (phrase (repeat 8 1/2)
                                 (cycle [-10 -10 -10 -10 -10 -10 -6 -10]))
                         (with (phrase [5/2 1/2 1/2 1/2]
@@ -64,22 +64,25 @@
                            [12 11 12 13 12 14 13 12 11])
                    (times 2))]
     (->>
+      ;pulse
       ;(with
       bass
       ;riff
       ;extra
       ;)
-      (then postscript)
-      (then (with
-              pulse
-              harmonies
-              ;arpeggios
-              ))
-      (then postscript)
+   ;   (then postscript)
+   ;   (then
+   ;     (with
+   ;           pulse
+   ;           harmonies
+   ;           arpeggios
+   ;           )
+   ;   )
+      ;(then postscript)
       (tempo (bpm 150))
       (where :pitch (comp scale/C scale/major)))))
 
-(definst over-it [freq 440 dur 1.0 vol 0.5]
+(definst over-it [freq 440 dur 1.0]
   (-> (sin-osc freq)
       (+ (* 1/3 (sin-osc 4/3) (sin-osc (* 2.01 freq))))
       (+ (* 1/2 (sin-osc 8/3) (sin-osc (* 3.01 freq))))
@@ -87,10 +90,10 @@
       (+ (* 2 (sin-osc 5/8) (sin-osc (* 0.5 freq))))
       (* 3)
       (clip2 0.8)
-      (rlpf (line:kr 2000 1000))
+      (rlpf (line:kr 2000 800 dur) 0.8)
       (* (env-gen (adsr 0.5 0.2 0.5 0.1)
                   (line:kr 1 0 dur) :action FREE))
-      (* vol)))
+      (* 0.5)))
 
 (defmethod live/play-note :default
   [{midi :pitch seconds :duration}]

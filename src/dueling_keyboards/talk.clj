@@ -106,17 +106,17 @@
 
 
 (comment
-  (let [interval [46 50]]
+  (let [interval (phrase [1/2 1/2 3 1] [45 52 [45 52] nil]) ]
     (->>
-      (->> (phrase [3 1] [interval nil])
+      (->> interval
            (where :pitch pythagorean-tuning))
 
       (then
-        (->> (phrase [3 1] [interval nil])
+        (->> interval
              (where :pitch meantone-temperament)))
 
       (then
-        (->> (phrase [3 1] [interval nil])
+        (->> interval
              (where :pitch equal-temperament)))
 
       live/play))

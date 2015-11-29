@@ -1,5 +1,6 @@
 (ns dueling-keyboards.talk
   (:require [overtone.live :refer :all :exclude [stop exp]]
+            [clojure.repl :as repl]
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
             [leipzig.chord :as chord]
@@ -15,7 +16,7 @@
 (definst chunky [freq 440 dur 5.0 vol 0.5]
   (* (square freq)
      vol
-     (env-gen (adsr 0.01 0.05 0.15 0.2)
+     (env-gen (adsr 0.1 0.05 0.15 0.2)
               (line:kr 1 0 dur) :action FREE)))
 
 (comment
@@ -141,31 +142,60 @@
 
 (def row-row
   "A simple melody built from durations and pitches."
-              ; Row, row, row  your boat,
+  ; Row, row, row  your boat,
   (->> (phrase [3/3  3/3  2/3  1/3  3/3]
                [  0    0    0    1    2])
        (then
-                ; Gent-ly   down the  stream,
+         ; Gent-ly   down the  stream,
          (phrase [2/3  1/3  2/3  1/3  6/3]
                  [  2    1    2    3    4]))
        (then    ; Merrily, merrily, merrily, merrily,
-         (phrase (repeat 12 1/3)
-                 (mapcat (partial repeat 3) [7 4 2 0])))
+             (phrase (repeat 12 1/3)
+                     (mapcat (partial repeat 3) [7 4 2 0])))
        (then
-                ; Life is   but  a    dream!
+         ; Life is   but  a    dream!
          (phrase [2/3  1/3  2/3  1/3  6/3]
                  [  4    3    2    1    0]))
-       (canon/canon (canon/simple 4))
+       (canon/canon #(->> ((canon/simple 4) %)
+                          (canon/canon (canon/simple 4))))
        (where :pitch scale/lower)
-       (where :pitch (comp scale/A scale/major))))
+       (where :pitch scale/lower)
+       (where :pitch (comp scale/A scale/sharp scale/major))))
 
 (comment
   (->> row-row
        (where :pitch pythagorean-tuning)
        ;(where :pitch meantone-temperament)
        ;(where :pitch equal-temperament)
-       (live/play))
+       live/play)
 )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Kolmogorov complexity ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def air-on-a-g-string
+  (repeat 1000 \G))
+
+(defmacro description-length [sym]
+  (let [definition (-> sym repl/source-fn read-string last)]
+    (-> definition print-str count)))
+
+(defn result-length [sym]
+  (-> sym print-str count))
+
+(comment
+  (description-length air-on-a-g-string)
+  (result-length air-on-a-g-string)
+
+  (description-length row-row)
+  (result-length row-row)
+  )
+
+
+
+
+
 
 (defmethod live/play-note :default
   [{hertz :pitch seconds :duration}]

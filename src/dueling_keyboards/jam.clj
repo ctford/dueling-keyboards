@@ -10,8 +10,11 @@
              [equal-temperament pythagorean-tuning]]))
 
 (comment
-  (live/jam (var dueling))
-  (over-it (* 55 16/9) 12)
+  (->> dueling
+       live/play
+       )
+
+  (over-it (* 55 16/9) 24)
   (live/jam (var im-not-worried))
 
   (map fx-chorus [0 1])
@@ -20,14 +23,15 @@
 
 (def dueling
   (->>
-    (times 2 (phrase (mapcat repeat [2 6 1 1] [1/4 1/2 1 4])
-                     [2 3 4 2 3 1 2 0 1 nil]))
-    (then (times 2 (phrase (mapcat repeat [6 1 1] [1/2 1 4])
-                           [0 0 1 2 0 2 1 nil])))
-    (then (times 2 (phrase [1/4 1/4 1/2 1/2 1/2 2]
-                           [chord/triad chord/triad chord/triad
-                            (chord/root chord/triad 3)
-                            chord/triad nil])))
+    (phrase [1/4 1/4 1/2 1/2 1 3/2]
+            (map #(-> chord/triad (chord/root %)) [0 0 0 3 0]))
+    (then (phrase [2] [nil]))
+    (times 2)
+    (then (mapthen #(->>
+                      (phrase (repeat 1/2) [0 1 2 3 4 3 2])
+                      (then (phrase [9/2] [nil]))
+                      (where :pitch (scale/from %)))
+                   [0 3 0 4]))
     (tempo (bpm 75))
     (where :pitch (comp scale/G scale/major))))
 
@@ -54,7 +58,8 @@
                          (cycle [10/4 1 1/4 1/4 4])
                          [[1 6] 4 1 1.5 [2 7.5] [2 7] 5 3 3.5 [4 6]])
                        (times 4))
-        pulse (phrase [32] [-3])
+        pulse (phrase (repeat 64 1/2) (repeat -10))
+        drone (phrase [32] [-10])
         postscript (->> (phrase (repeat 8 1/2)
                                 (cycle [-10 -10 -10 -10 -10 -10 -6 -10]))
                         (with (phrase [5/2 1/2 1/2 1/2]
@@ -64,12 +69,12 @@
                            [12 11 12 13 12 14 13 12 11])
                    (times 2))]
     (->>
-      ;pulse
-      ;(with
-      bass
-      ;riff
-      ;extra
-      ;)
+      drone
+   ;   (with
+   ;   bass
+   ;   riff
+   ;   extra
+   ;   )
    ;   (then postscript)
    ;   (then
    ;     (with
@@ -78,7 +83,7 @@
    ;           arpeggios
    ;           )
    ;   )
-      ;(then postscript)
+   ;(then postscript)
       (tempo (bpm 150))
       (where :pitch (comp scale/C scale/major)))))
 

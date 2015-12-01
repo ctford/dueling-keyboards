@@ -11,14 +11,7 @@
 
 (comment
   (->> dueling
-       live/play
-       )
-
-  (over-it (* 55 16/9) 24)
-  (live/jam (var im-not-worried))
-
-  (map fx-chorus [0 1])
-  (volume 0.8)
+       live/play)
 )
 
 (def dueling
@@ -34,6 +27,14 @@
                    [0 3 0 4]))
     (tempo (bpm 75))
     (where :pitch (comp scale/G scale/major))))
+
+(comment
+  (over-it (* 55 16/9) 24)
+  (live/jam (var im-not-worried))
+
+  (map fx-chorus [0 1])
+  (volume 0.8)
+)
 
 (def im-not-worried
   (let [riff (->> (phrase (cycle [5/2 1/2 1/2 1/2])

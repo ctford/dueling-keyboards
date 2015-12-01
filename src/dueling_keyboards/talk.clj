@@ -34,10 +34,11 @@
 ;;;;;;;;;;;;;;;;;;
 
 (definst chunky [freq 440 dur 5.0 vol 0.5]
-  (* (lpf (square freq) 1500)
-     vol
-     (env-gen (adsr 0.03 0.5 0.5 0.2)
-              (line:kr 1 0 dur) :action FREE)))
+  (-> (square freq)
+      (lpf 1500)
+      (* vol)
+      (* (env-gen (adsr 0.03 0.5 0.5 0.2)
+                  (line:kr 1 0 dur) :action FREE))))
 
 (comment
   (do
@@ -126,7 +127,7 @@
 
 
 (comment
-  (let [interval (phrase [1/2 1/2 3 1] [45 52 [45 52] nil]) ]
+  (let [interval (phrase [3 1] [[45 52] nil]) ]
     (->>
       interval (where :pitch pythagorean-tuning)
 

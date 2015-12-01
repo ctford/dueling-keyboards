@@ -37,7 +37,7 @@
   (-> (square freq)
       (lpf 1500)
       (* vol)
-      (* (env-gen (adsr 0.03 0.5 0.5 0.2)
+      (* (env-gen (adsr 0.25 0.5 0.5 0.2)
                   (line:kr 1 0 dur) :action FREE))))
 
 (comment
@@ -191,7 +191,7 @@
                  [  4    3    2    1    0]))
        (canon/canon #(->> ((canon/simple 4) %)
                           (canon/canon (canon/simple 4))))
-       (where :pitch (comp low A sharp major))))
+       (where :pitch (comp low A major))))
 
 (comment
   (->> row-row

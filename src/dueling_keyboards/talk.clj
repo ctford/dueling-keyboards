@@ -7,7 +7,8 @@
             [leipzig.scale :refer [A low sharp flat major]]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
-            [dueling-keyboards.tuning :as tuning]))
+            [dueling-keyboards.tuning :as tuning]
+            [dueling-keyboards.akadinda :as akadinda]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Getting started ;;;
@@ -159,7 +160,8 @@
        (canon/canon
          (comp (canon/simple 1/6) (canon/interval -4)))
        (canon/canon
-         (comp (canon/simple 1/6) (canon/interval -4)))))
+         (comp (canon/simple 1/6) (canon/interval -4)))
+       (all :part :xylophone)))
 
 (comment
   (->> akadinda
@@ -228,3 +230,7 @@
 (defmethod live/play-note :default
   [{hertz :pitch seconds :duration}]
   (when hertz (chunky hertz seconds)))
+
+(defmethod live/play-note :xylophone
+  [{hertz :pitch}]
+  (when hertz (akadinda/xylophone hertz)))

@@ -26,6 +26,7 @@
                       (where :pitch (scale/from %)))
                    [0 3 0 4]))
     (tempo (bpm 75))
+    (all :attack 0.01)
     (where :pitch (comp scale/G scale/major))))
 
 (comment
@@ -88,7 +89,7 @@
       (tempo (bpm 150))
       (where :pitch (comp scale/C scale/major)))))
 
-(definst over-it [freq 440 dur 1.0]
+(definst over-it [freq 440 dur 1.0 attack 0.5]
   (-> (sin-osc freq)
       (+ (* 1/3 (sin-osc 4/3) (sin-osc (* 2.01 freq))))
       (+ (* 1/2 (sin-osc 8/3) (sin-osc (* 3.01 freq))))
@@ -97,10 +98,10 @@
       (* 3)
       (clip2 0.8)
       (rlpf (line:kr 2000 800 dur) 0.8)
-      (* (env-gen (adsr 0.5 0.2 0.5 0.1)
+      (* (env-gen (adsr attack 0.2 0.5 0.1)
                   (line:kr 1 0 dur) :action FREE))
       (* 0.5)))
 
 (defmethod live/play-note :default
-  [{midi :pitch seconds :duration}]
-  (some-> midi equal-temperament (over-it seconds)))
+  [{midi :pitch seconds :duration attack :attack}]
+  (some-> midi equal-temperament (over-it seconds (or attack 0.5))))

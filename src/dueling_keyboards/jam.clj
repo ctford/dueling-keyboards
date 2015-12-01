@@ -9,12 +9,11 @@
             [dueling-keyboards.talk :refer
              [equal-temperament pythagorean-tuning]]))
 
-(comment
-  (->> dueling
-       live/play)
-)
+;;;;;;;;;;;;;;;;;;;;;;
+;;; Dueling banjos ;;;
+;;;;;;;;;;;;;;;;;;;;;;
 
-(def dueling
+(comment
   (->>
     (phrase [1/4 1/4 1/2 1/2 1 3/2]
             (map #(-> chord/triad (chord/root %)) [0 0 0 3 0]))
@@ -27,17 +26,22 @@
                    [0 3 0 4]))
     (tempo (bpm 75))
     (all :attack 0.01)
-    (where :pitch (comp scale/G scale/major))))
+    (where :pitch (comp scale/G scale/major))
+    live/play))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Dueling keyboards ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
   (over-it (* 55 16/9) 24)
-  (live/jam (var im-not-worried))
+  (live/jam (var dueling-keyboards))
 
   (map fx-chorus [0 1])
   (volume 0.8)
 )
 
-(def im-not-worried
+(def dueling-keyboards
   (let [riff (->> (phrase (cycle [5/2 1/2 1/2 1/2])
                           [[-2 3.5] -2 1 0
                            [-2 3] -2 1 0

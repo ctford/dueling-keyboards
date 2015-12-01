@@ -151,9 +151,9 @@
    equal temperament."
   [pitch]
   (/ (* tuning/concert-a 4)
-     (reduce * (repeat pitch (java.lang.Math/pow 2 1/5)))))
+     (java.lang.Math/pow 2 (/ pitch 5))))
 
-(def akadinda
+(def akadinda-riff
   (->> (phrase (repeat 1/4)
                (concat
                  (range 18)
@@ -162,10 +162,11 @@
          (comp (canon/simple 1/6) (canon/interval -4)))
        (canon/canon
          (comp (canon/simple 1/6) (canon/interval -4)))
+       (where :pitch (partial max 0))
        (all :part :xylophone)))
 
 (comment
-  (->> akadinda
+  (->> akadinda-riff
        (where :pitch baganda-temperament)
        live/play))
 

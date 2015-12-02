@@ -14,20 +14,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (->>
-    (phrase [1/4 1/4 1/2 1/2 1 3/2]
-            (map #(-> chord/triad (chord/root %)) [0 0 0 3 0]))
-    (then (phrase [2] [nil]))
-    (times 2)
-    (then (mapthen #(->>
-                      (phrase (repeat 1/2) [0 1 2 3 4 3 2])
-                      (then (phrase [9/2] [nil]))
-                      (where :pitch (scale/from %)))
-                   [0 3 0 4]))
-    (tempo (bpm 75))
-    (all :attack 0.01)
-    (where :pitch (comp scale/G scale/major))
-    live/play))
+  (let [strum (partial phrase (concat [1/4 1/4] (repeat 1/2)))
+        chord #(-> chord/triad (chord/root %))]
+    (->>
+      (strum (concat (map chord [0 0 0 3 0]) (repeat 4 nil)))
+      ;(then (strum (concat [0 0 0 1 2 3 4 3 2] (repeat 8 nil))))
+      (tempo (bpm 75))
+      (all :attack 0.01)
+      (where :pitch (comp scale/G scale/major))
+      live/play)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dueling keyboards ;;;

@@ -16,13 +16,13 @@
 (defn organ [& freqs]
   (doseq [f freqs] (inst/organ f)))
 
+; This makes some ratios work out nicely, and doesn't materially
+; affect anything even though the real figure is closer to 340.
 (def speed-of-sound 500)
 
 (defmethod live/play-note :default
   [{hertz :pitch seconds :duration}]
   (some-> hertz (inst/organ :dur seconds :vol 0.1)))
-
-
 
 ;;;;;;;;;;;;;;;;;;;
 ;;; Periodicity ;;;

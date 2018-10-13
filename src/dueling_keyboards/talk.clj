@@ -4,52 +4,74 @@
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
             [leipzig.chord :as chord]
-            [leipzig.scale :refer [A low sharp flat major]]
+            [leipzig.scale :refer [A B C low sharp flat major]]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
             [dueling-keyboards.tuning :as tuning]
-            [dueling-keyboards.akadinda :as akadinda]))
+            [dueling-keyboards.instrument :as inst]))
 
-;;;;;;;;;;;;;;;;;;;;;;;
-;;; Getting started ;;;
-;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;
+;;; Periodicity ;;;
+;;;;;;;;;;;;;;;;;;;
 
-#_
-
-(defn play-melody [melody metro start] ( do
-  (def duration (/ (* 2 (beat-length metro)) 1000))
-  (defn play-note [note] (organ-cornet note duration))
-  (if (not (empty? melody)) (do
-    (at (metro start) (play-note (midi->hz (note (first melody)))))
-    (play-melody (rest melody) metro (+ start 2))
-  ))
-))
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;
-;;; Periodic waves ;;;
-;;;;;;;;;;;;;;;;;;;;;;
-
-(definst chunky [freq 440 dur 5.0 vol 0.5]
-  (-> (square freq)
-      (lpf 1500)
-      (* vol)
-      (* (env-gen (adsr 0.25 0.5 0.5 0.2)
-                  (line:kr 1 0 dur) :action FREE))))
+(defn sine-wave [& freqs]
+  (doseq [f freqs] (inst/sine-wave f)))
 
 (comment
-  (do
-    (chunky 50)
-    (chunky 99)
-    (chunky 100)
-    (chunky 200)
-    (chunky 300)
-    (chunky 400)
-    (chunky 500))
+
+  (sine-wave 400)
+
+  (sine-wave 400 399)
+
 )
+
+;;;;;;;;;;;;;;;;;;
+;;; Consonance ;;;
+;;;;;;;;;;;;;;;;;;
+
+(defn organs [& freqs]
+  (doseq [f freqs] (inst/organ f)))
+
+(comment
+
+    (organs 400 400)
+
+    (organs 400 800)
+
+    (organs 400 600)
+
+    (organs 400 (* 400 (Math/sqrt 2)))
+
+)
+
+;;;;;;;;;;;;;;
+;;; Chords ;;;
+;;;;;;;;;;;;;;
+
+(def speed-of-sound 340)
+
+(defn m->hz [wavelength]
+  (/ speed-of-sound wavelength))
+
+(comment
+
+    ; V
+    (organs 300 400 500)
+
+    ; VIb
+    (organs (* 4.1666666 100) (* 5 100) (* 6.25 100))
+
+    ; VIb
+    (organs (* 25/6 100) (* 25/5 100) (* 25/4 100))
+
+    ; VIb
+    (organs (-> 6 (* 17/125) m->hz) (-> 5 (* 17/125) m->hz) (-> 4 (* 17/125) m->hz))
+
+    ; I
+    (organs 400 (* 400 4/3) (* 400 5/3))
+
+)
+
 ;;;;;;;;;;;;;;;;;;
 ;;; Pythagoras ;;;
 ;;;;;;;;;;;;;;;;;;
@@ -91,7 +113,7 @@
 (def meantone-temperament
   "Converts midi to hertz, using a variant of Pythagorean tuning
    designed to get a pure 5/4 major third."
-  (let [narrow (java.lang.Math/pow 5 1/4)
+  (let [narrow (Math/pow 5 1/4)
         wolf (* narrow 128/125)
         fifths [narrow narrow narrow narrow narrow narrow
                 narrow wolf narrow narrow narrow]]
@@ -110,7 +132,7 @@
 (def equal-temperament
   "Converts midi to hertz, spreading out the Pythagorean comma
    evenly across all the intervals."
-  (let [narrow (java.lang.Math/pow 2 7/12)
+  (let [narrow (Math/pow 2 7/12)
         fifths [narrow narrow narrow narrow narrow narrow
                 narrow narrow narrow narrow narrow]]
     (tuning/tune fifths)))
@@ -127,50 +149,19 @@
 
 
 (comment
-  (let [interval (phrase [3 1] [[45 52] nil]) ]
+
+  (let [consonant-fifth (phrase [5 1] [[69 76] nil])
+        dissonant-fifth (phrase [5 1] [[70 77] nil])
+        interval dissonant-fifth]
     (->>
       interval (where :pitch pythagorean-tuning)
+      (then (->> interval (where :pitch meantone-temperament)))
+      (then (->> interval (where :pitch equal-temperament)))
+      live/play))
 
-      (then
-        (->> interval (where :pitch meantone-temperament)))
+)
 
-      (then
-        (->> interval (where :pitch equal-temperament)))
-
-      live/play)))
-
-
-
-
-;;;;;;;;;;;;;;;
-;;; Baganda ;;;
-;;;;;;;;;;;;;;;
-
-(defn baganda-temperament
-  "Converts midi to hertz, using a five tone version of
-   equal temperament."
-  [pitch]
-  (/ (* tuning/concert-a 4)
-     (java.lang.Math/pow 2 (/ pitch 5))))
-
-(def akadinda-riff
-  (->> (phrase (repeat 1/4)
-               (concat
-                 (range 18)
-                 (mapcat repeat [4 2 4 2 3 3] [17 18 17 18 17 12])))
-       (canon/canon
-         (comp (canon/simple 1/6) (canon/interval -4)))
-       (canon/canon
-         (comp (canon/simple 1/6) (canon/interval -4)))
-       (where :pitch (partial max 0))
-       (all :part :xylophone)))
-
-(comment
-  (->> akadinda-riff
-       (where :pitch baganda-temperament)
-       live/play))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Functional composition ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -195,11 +186,13 @@
        (where :pitch (comp low A major))))
 
 (comment
+
   (->> row-row
        ;(where :pitch pythagorean-tuning)
        (where :pitch meantone-temperament)
        ;(where :pitch equal-temperament)
        live/play)
+
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -231,8 +224,4 @@
 
 (defmethod live/play-note :default
   [{hertz :pitch seconds :duration}]
-  (when hertz (chunky hertz seconds)))
-
-(defmethod live/play-note :xylophone
-  [{hertz :pitch}]
-  (when hertz (akadinda/xylophone hertz)))
+  (when hertz (organ hertz :dur seconds :vol 0.1)))

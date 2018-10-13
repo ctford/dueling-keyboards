@@ -1,13 +1,15 @@
 (ns dueling-keyboards.jam
   (:require [overtone.live :refer :all :exclude [stop sixth]]
+            [overtone.inst.drum :as kit]
+            [overtone.inst.synth :as synth]
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
             [leipzig.scale :as scale]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
             [leipzig.chord :as chord]
-            [dueling-keyboards.talk :refer
-             [equal-temperament pythagorean-tuning]]))
+            [dueling-keyboards.talk :refer [equal-temperament pythagorean-tuning]]
+            [dueling-keyboards.instrument :as inst]))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dueling banjos ;;;
@@ -29,10 +31,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (over-it (* 55 16/9) 24)
+  (inst/over-it (* 55 16/9) 24)
   (live/jam (var dueling-keyboards))
 
   (map fx-chorus [0 1])
+  (map fx-reverb [0 1])
+
+  (clear-fx fx-reverb)
+
   (volume 0.8)
 )
 
@@ -54,13 +60,20 @@
                          (mapcat #(take 16 (cycle [%2 %1 11 %1]))
                                  [6 7.5 7 6]
                                  [8 9 9 8]))
-                       (times 4))
+                       (times 4)
+                       (all :part :melody))
         harmonies (->> (phrase
                          (cycle [10/4 1 1/4 1/4 4])
                          [[1 6] 4 1 1.5 [2 7.5] [2 7] 5 3 3.5 [4 6]])
-                       (times 4))
+                       (times 4)
+                       (all :part :melody)
+                       )
         pulse (phrase (repeat 64 1/2) (repeat -10))
         drone (phrase [32] [-10])
+        with-beat (fn [notes] (->> notes
+                                   (with (take (* 2 (duration notes))
+                                               (->> (phrase (repeat 1/2) (repeat -14))
+                                                    (having :part (cycle [:kick nil :hat nil :kick :hat :hat2 :hat])))))))
         postscript (->> (phrase (repeat 8 1/2)
                                 (cycle [-10 -10 -10 -10 -10 -10 -6 -10]))
                         (with (phrase [5/2 1/2 1/2 1/2]
@@ -71,36 +84,42 @@
                    (times 2))]
     (->>
       drone
-   ;   (with
-   ;   bass
-   ;   riff
-   ;   extra
-   ;   )
-   ;   (then postscript)
-   ;   (then
-   ;     (with
-   ;           pulse
-   ;           harmonies
-   ;           arpeggios
-   ;           )
-   ;   )
-   ;(then postscript)
+  ;    (with
+  ;    bass
+  ;    riff
+  ;    extra
+  ;    )
+  ;    (then postscript)
+  ;    (then
+        (with
+              pulse
+             harmonies
+              arpeggios
+              )
+  ;    )
+   (then postscript)
+      with-beat
       (tempo (bpm 150))
       (where :pitch (comp scale/C scale/major)))))
 
-(definst over-it [freq 440 dur 1.0 attack 0.5]
-  (-> (sin-osc freq)
-      (+ (* 1/3 (sin-osc 4/3) (sin-osc (* 2.01 freq))))
-      (+ (* 1/2 (sin-osc 8/3) (sin-osc (* 3.01 freq))))
-      (+ (* 1/8 (sin-osc 1/3) (sin-osc (* 5.01 freq))))
-      (+ (* 2 (sin-osc 5/8) (sin-osc (* 0.5 freq))))
-      (* 3)
-      (clip2 0.8)
-      (rlpf (line:kr 2000 800 dur) 0.8)
-      (* (env-gen (adsr attack 0.2 0.5 0.1)
-                  (line:kr 1 0 dur) :action FREE))
-      (* 0.5)))
-
 (defmethod live/play-note :default
   [{midi :pitch seconds :duration attack :attack}]
-  (some-> midi equal-temperament (over-it seconds (or attack 0.5))))
+  (some-> midi equal-temperament (inst/over-it seconds (or attack 0.05) :volume 0.3))
+ ; (some-> midi equal-temperament (kit/kick2 seconds (or attack 0.05) :volume 0.3))
+  )
+
+(defmethod live/play-note :melody
+  [{midi :pitch seconds :duration attack :attack}]
+  (some-> midi equal-temperament (inst/organ seconds (or attack 0.05) :vol 1.0)))
+
+(defmethod live/play-note :kick
+  [{midi :pitch seconds :duration}]
+  (some-> midi equal-temperament (kit/kick :env-ratio 15)))
+
+(defmethod live/play-note :hat
+  [{midi :pitch seconds :duration}]
+  (some-> midi equal-temperament kit/quick-kick))
+
+(defmethod live/play-note :hat2
+  [{midi :pitch seconds :duration}]
+  (some-> midi equal-temperament (* 2/3) (kit/quick-kick)))

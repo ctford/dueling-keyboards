@@ -10,75 +10,112 @@
             [dueling-keyboards.tuning :as tuning]
             [dueling-keyboards.instrument :as inst]))
 
+(defn sine-wave [& freqs]
+  (doseq [f freqs] (inst/sine-wave f)))
+
+(defn organ [& freqs]
+  (doseq [f freqs] (inst/organ f)))
+
+(def speed-of-sound 500)
+
+(defmethod live/play-note :default
+  [{hertz :pitch seconds :duration}]
+  (some-> hertz (inst/organ :dur seconds :vol 0.1)))
+
+
+
 ;;;;;;;;;;;;;;;;;;;
 ;;; Periodicity ;;;
 ;;;;;;;;;;;;;;;;;;;
 
-(defn sine-wave [& freqs]
-  (doseq [f freqs] (inst/sine-wave f)))
 
 (comment
-
   (sine-wave 400)
 
   (sine-wave 400 399)
 
+  (organ 400 399)
+
 )
+
+
+
+
+
+
+
+
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;
 ;;; Consonance ;;;
 ;;;;;;;;;;;;;;;;;;
 
-(defn organs [& freqs]
-  (doseq [f freqs] (inst/organ f)))
 
 (comment
 
-    (organs 400 400)
+    (organ 400 400)
 
-    (organs 400 800)
+    (organ 400 500)
 
-    (organs 400 600)
+    (organ 400 600)
 
-    (organs 400 (* 400 (Math/sqrt 2)))
+    (organ 400 700)
+
+    (organ 400 800)
+
+    (organ 400 (* 400 (Math/sqrt 2)))
 
 )
+
+
+
+
+
 
 ;;;;;;;;;;;;;;
 ;;; Chords ;;;
 ;;;;;;;;;;;;;;
 
-(def speed-of-sound 340)
 
 (defn m->hz [wavelength]
   (/ speed-of-sound wavelength))
 
 (comment
 
-    ; V
-    (organs 300 400 500)
+    (organ 400 500 600)
 
-    ; VIb
-    (organs (* 4.1666666 100) (* 5 100) (* 6.25 100))
+    (organ 416.66666 500 625)
 
-    ; VIb
-    (organs (* 25/6 100) (* 25/5 100) (* 25/4 100))
+    (organ (m->hz 6/5) (m->hz 5/5) (m->hz 4/5))
 
-    ; VIb
-    (organs (-> 6 (* 17/125) m->hz) (-> 5 (* 17/125) m->hz) (-> 4 (* 17/125) m->hz))
-
-    ; I
-    (organs 400 (* 400 4/3) (* 400 5/3))
+    (organ 400 (* 400 4/3) (* 400 5/3))
 
 )
+
+
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;
 ;;; Pythagoras ;;;
 ;;;;;;;;;;;;;;;;;;
 
+
 (def pythagorean-comma
   "The discrepency between an octave built from 3/2s and 2/1."
-  531441/524288)
+  (/ (Math/pow 3 12) (Math/pow 2 19)))
+
+
+
+
+
+
 
 
 
@@ -95,6 +132,7 @@
 ;;; Tuning systems ;;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+
 (def pythagorean-tuning
   "Converts midi to hertz, putting the entire Pythagorean comma
    into one ghastly interval."
@@ -110,6 +148,17 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 (def meantone-temperament
   "Converts midi to hertz, using a variant of Pythagorean tuning
    designed to get a pure 5/4 major third."
@@ -118,6 +167,13 @@
         fifths [narrow narrow narrow narrow narrow narrow
                 narrow wolf narrow narrow narrow]]
     (tuning/tune fifths)))
+
+
+
+
+
+
+
 
 
 
@@ -148,6 +204,13 @@
 
 
 
+
+
+;;;;;;;;;;;;;;;;;;
+;;; Comparison ;;;
+;;;;;;;;;;;;;;;;;;
+
+
 (comment
 
   (let [consonant-fifth (phrase [5 1] [[69 76] nil])
@@ -161,9 +224,18 @@
 
 )
 
+
+
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Functional composition ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (def row-row
   "A simple melody built from durations and pitches."
@@ -185,6 +257,7 @@
                           (canon/canon (canon/simple 4))))
        (where :pitch (comp low A major))))
 
+
 (comment
 
   (->> row-row
@@ -195,33 +268,45 @@
 
 )
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Kolmogorov complexity ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 (def air-on-a-g-string
   (repeat 1000 \G))
 
-(defmacro description-length [sym]
-  (let [definition (-> sym repl/source-fn read-string last)]
-    (-> definition print-str count)))
+(defmacro definitional [macro sym]
+  (let [value (-> sym repl/source-fn read-string last)]
+    `(~macro ~value)))
 
-(defn result-length [sym]
-  (-> sym print-str count))
+(defmacro description-length [expression]
+  (-> expression print-str count))
+
+(defn result-length [expression]
+  (-> expression print-str count))
 
 (comment
-  (description-length air-on-a-g-string)
-  (result-length air-on-a-g-string)
+  (definitional description-length air-on-a-g-string)
+  (definitional result-length air-on-a-g-string)
 
-  (description-length row-row)
-  (result-length row-row)
-  )
+  (definitional description-length row-row)
+  (definitional result-length row-row)
+)
 
-
-
-
-
-
-(defmethod live/play-note :default
-  [{hertz :pitch seconds :duration}]
-  (when hertz (organ hertz :dur seconds :vol 0.1)))

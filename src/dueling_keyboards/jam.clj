@@ -26,6 +26,16 @@
       (where :pitch (comp scale/G scale/major))
       live/play)))
 
+
+
+
+
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dueling keyboards ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -36,8 +46,6 @@
 
   (map fx-chorus [0 1])
   (map fx-reverb [0 1])
-
-  (clear-fx fx-reverb)
 
   (volume 0.8)
 )
@@ -73,7 +81,7 @@
         with-beat (fn [notes] (->> notes
                                    (with (take (* 2 (duration notes))
                                                (->> (phrase (repeat 1/2) (repeat -14))
-                                                    (having :part (cycle [:kick nil :hat nil :kick :hat :hat2 :hat])))))))
+                                                    (having :part (cycle [:tock nil :tick nil :tock :tick :tick2 :tick])))))))
         postscript (->> (phrase (repeat 8 1/2)
                                 (cycle [-10 -10 -10 -10 -10 -10 -6 -10]))
                         (with (phrase [5/2 1/2 1/2 1/2]
@@ -112,14 +120,14 @@
   [{midi :pitch seconds :duration attack :attack}]
   (some-> midi equal-temperament (inst/organ seconds (or attack 0.05) :vol 1.0)))
 
-(defmethod live/play-note :kick
+(defmethod live/play-note :tock
   [{midi :pitch seconds :duration}]
   (some-> midi equal-temperament (kit/kick :env-ratio 15)))
 
-(defmethod live/play-note :hat
+(defmethod live/play-note :tick
   [{midi :pitch seconds :duration}]
   (some-> midi equal-temperament kit/quick-kick))
 
-(defmethod live/play-note :hat2
+(defmethod live/play-note :tick2
   [{midi :pitch seconds :duration}]
   (some-> midi equal-temperament (* 2/3) (kit/quick-kick)))

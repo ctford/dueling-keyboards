@@ -7,13 +7,13 @@
       (* (env-gen (adsr 0.1 0.15 0.5 0.3)
                   (line:kr 1 0 dur) :action FREE))))
 
-(definst organ [freq 440 dur 5.0 vol 1.0 pan 0.0 wet 0.5 room 0.5 limit 20000 attack 0.1]
+(definst organ [freq 440 dur 5.0 vol 0.3 wet 0.5 room 0.5 limit 5000 attack 0.1]
   (->
-    (map #(sin-osc (* freq %)) (range 1 8))
+    (map #(sin-osc (* freq %)) (range 1 5))
     mix
     (* (env-gen (asr attack 1.0 0.5) (line:kr 1.0 0.0 dur) :action FREE))
-    (lpf 2500)
-    (free-verb :mix 0.5 :damp 0.5 :room 0.8)
+    (lpf limit)
+    (free-verb :mix 0.5 :damp wet :room room)
     (* vol)))
 
 (definst over-it [freq 440 dur 1.0 attack 0.5 volume 0.5]

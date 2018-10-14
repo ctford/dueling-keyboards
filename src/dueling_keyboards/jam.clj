@@ -1,6 +1,5 @@
 (ns dueling-keyboards.jam
   (:require [overtone.live :refer :all :exclude [stop sixth]]
-            [overtone.inst.drum :as kit]
             [overtone.inst.synth :as synth]
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
@@ -16,15 +15,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (let [strum (partial phrase (concat [1/4 1/4] (repeat 1/2)))
+
+  (let [strum #(->> % (phrase (concat [1/4 1/4] (repeat 1/2))) (then (phrase [4] [nil])))
         chord #(-> chord/triad (chord/root %))]
     (->>
-      (strum (concat (map chord [0 0 0 3 0]) (repeat 4 nil)))
-      ;(then (strum (concat [0 0 0 1 2 3 4 3 2] (repeat 8 nil))))
+      (strum (concat (map chord [0 0 0 3 0])))
+      ;(times 2)
+      #_(then (mapthen #(->> (strum (concat [0 0 0 1 2 3 4 3 2]))
+                           (where :pitch (partial + %)))
+                     [0 0 3 0 4 0]))
       (tempo (bpm 75))
-      (all :attack 0.01)
-      (where :pitch (comp scale/G scale/major))
-      live/play)))
+      (all :attack 0.001)
+      (where :pitch (comp equal-temperament scale/G scale/major))
+      live/play))
+
+)
 
 
 
@@ -41,14 +46,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
+
   (inst/over-it (* 55 16/9) 24)
+
   (live/jam (var dueling-keyboards))
 
   (map fx-chorus [0 1])
   (map fx-reverb [0 1])
+  (map fx-distortion2 [0 1])
 
   (volume 0.8)
 )
+
+(defn with-beat [notes]
+  (let [hits [:tock nil :tick nil :tock :tick :tick2 :tick]]
+    (->> notes
+       (with (take (* 2 (duration notes))
+                   (->> (phrase (repeat 1/2) (repeat -14))
+                        (having :part (cycle hits))))))))
 
 (def dueling-keyboards
   (let [riff (->> (phrase (cycle [5/2 1/2 1/2 1/2])
@@ -62,7 +77,9 @@
                             repeat
                             (cycle [6 1 1])
                             [-6 -6 -5 -4 -5 -6 -7 -8 -9 -10 -6 -10]))
-                  (times 4))
+                  (times 4)
+                  ;            (where :pitch scale/lower)
+                  )
         arpeggios (->> (phrase
                          (repeat 64 1/4)
                          (mapcat #(take 16 (cycle [%2 %1 11 %1]))
@@ -78,10 +95,6 @@
                        )
         pulse (phrase (repeat 64 1/2) (repeat -10))
         drone (phrase [32] [-10])
-        with-beat (fn [notes] (->> notes
-                                   (with (take (* 2 (duration notes))
-                                               (->> (phrase (repeat 1/2) (repeat -14))
-                                                    (having :part (cycle [:tock nil :tick nil :tock :tick :tick2 :tick])))))))
         postscript (->> (phrase (repeat 8 1/2)
                                 (cycle [-10 -10 -10 -10 -10 -10 -6 -10]))
                         (with (phrase [5/2 1/2 1/2 1/2]
@@ -92,42 +105,43 @@
                    (times 2))]
     (->>
       drone
-  ;    (with
-  ;    bass
-  ;    riff
-  ;    extra
-  ;    )
-  ;    (then postscript)
-  ;    (then
-        (with
-              pulse
-             harmonies
-              arpeggios
-              )
-  ;    )
-   (then postscript)
+     #_    (with
+             bass
+     ;        riff
+     ;        extra
+             )
+      ;    (then postscript)
+     #_      (then
+               (with
+                 pulse
+                 harmonies
+     ;            arpeggios
+                 ))
+      ;(then postscript)
       with-beat
       (tempo (bpm 150))
-      (where :pitch (comp scale/C scale/major)))))
+      (where :pitch (comp equal-temperament scale/C scale/major)))))
+
+(def room 0.8)
 
 (defmethod live/play-note :default
   [{midi :pitch seconds :duration attack :attack}]
-  (some-> midi equal-temperament (inst/over-it seconds (or attack 0.05) :volume 0.3))
- ; (some-> midi equal-temperament (kit/kick2 seconds (or attack 0.05) :volume 0.3))
+  (some-> midi (inst/over-it seconds (or attack 0.05) :volume 0.5 :room room))
+;  (some-> midi (inst/kick2 seconds (or attack 0.05) :volume 0.3))
   )
 
 (defmethod live/play-note :melody
   [{midi :pitch seconds :duration attack :attack}]
-  (some-> midi equal-temperament (inst/organ seconds (or attack 0.05) :vol 1.0)))
+  (some-> midi (inst/organ seconds (or attack 0.05) :vol 0.3 :room room)))
 
 (defmethod live/play-note :tock
   [{midi :pitch seconds :duration}]
-  (some-> midi equal-temperament (kit/kick :env-ratio 15)))
+  (some-> midi (inst/kick :vol 1.5 :env-ratio 18 :room room)))
 
 (defmethod live/play-note :tick
   [{midi :pitch seconds :duration}]
-  (some-> midi equal-temperament kit/quick-kick))
+   (some-> midi (inst/quick-kick :room room)))
 
 (defmethod live/play-note :tick2
   [{midi :pitch seconds :duration}]
-  (some-> midi equal-temperament (* 2/3) (kit/quick-kick)))
+   (some-> midi (* 2/3) (inst/quick-kick :room room)))

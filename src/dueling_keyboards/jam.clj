@@ -119,7 +119,7 @@
 (defmethod live/play-note :default
   [{midi :pitch seconds :duration attack :attack}]
   (some-> midi (inst/over-it seconds (or attack 0.05) :volume 0.5 :room room))
-;  (some-> midi (inst/kick2 seconds (or attack 0.05) :volume 0.3))
+;  (some-> midi (inst/kick seconds (or attack 0.05) :volume 0.3))
   )
 
 (defmethod live/play-note :melody
@@ -128,7 +128,7 @@
 
 (defmethod live/play-note :tock
   [{midi :pitch seconds :duration}]
-  (some-> midi (inst/kick :vol 1.5 :env-ratio 18 :room room)))
+  (some-> midi (inst/kick :vol 1.3 :env-ratio 15 :room room)))
 
 (defmethod live/play-note :tick
   [{midi :pitch seconds :duration}]

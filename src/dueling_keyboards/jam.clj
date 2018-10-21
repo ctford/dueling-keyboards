@@ -10,6 +10,7 @@
             [dueling-keyboards.talk :refer [equal-temperament pythagorean-tuning]]
             [dueling-keyboards.instrument :as inst]))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dueling banjos ;;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -36,24 +37,15 @@
 
 
 
-
-
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dueling keyboards ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
 
-  (inst/over-it (* 55 16/9) 24)
-
   (live/jam (var dueling-keyboards))
 
-  (map fx-chorus [0 1])
-  (map fx-reverb [0 1])
-  (map fx-distortion2 [0 1])
+  (def dueling-keyboards nil)
 
   (volume 0.8)
 )

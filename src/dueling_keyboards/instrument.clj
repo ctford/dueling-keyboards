@@ -17,9 +17,9 @@
   (->
     (map #(sin-osc (* freq %)) (range 1 5))
     mix
-    (* (env-gen (asr attack 1.0 0.5) (line:kr 1.0 0.0 dur) :action FREE))
     (lpf limit)
     (free-verb :mix 0.5 :damp wet :room room)
+    (* (env-gen (asr attack 1.0 0.5) (line:kr 1.0 0.0 dur) :action FREE))
     (* vol)))
 
 (definst over-it [freq 440 dur 1.0 attack 0.5 volume 0.5 room 0.5 wet 0.5]
@@ -31,9 +31,9 @@
       (* 3)
       (clip2 0.8)
       (rlpf (line:kr 2000 800 dur) 0.8)
+      (free-verb :mix 0.5 :damp wet :room room)
       (* (env-gen (adsr attack 0.2 0.5 0.1)
                   (line:kr 1 0 dur) :action FREE))
-      (free-verb :mix 0.5 :damp wet :room room)
     ;  (rlpf resonance 0.1)
       (* volume 0.5)))
 

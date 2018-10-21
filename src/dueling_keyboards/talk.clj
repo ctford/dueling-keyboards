@@ -292,21 +292,18 @@
 (def air-on-a-g-string
   (repeat 1000 \G))
 
-(defmacro definitional [macro sym]
-  (let [value (-> sym repl/source-fn read-string last)]
-    `(~macro ~value)))
+(defmacro description-length [sym]
+  (let [read-def (fn [s] (-> s repl/source-fn read-string last))]
+    (-> sym read-def print-str count)))
 
-(defmacro description-length [expression]
-  (-> expression print-str count))
-
-(defn result-length [expression]
-  (-> expression print-str count))
+(defn result-length [expr]
+  (-> expr print-str count))
 
 (comment
-  (definitional description-length air-on-a-g-string)
-  (definitional result-length air-on-a-g-string)
+  (description-length air-on-a-g-string)
+  (result-length air-on-a-g-string)
 
-  (definitional description-length row-row)
-  (definitional result-length row-row)
+  (description-length row-row)
+  (result-length row-row)
 )
 

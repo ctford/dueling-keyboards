@@ -241,7 +241,7 @@
 
   (let [consonant-fifth (phrase [5 1] [[69 76] nil])
         dissonant-fifth (phrase [5 1] [[70 77] nil])
-        interval dissonant-fifth]
+        interval consonant-fifth]
     (->>
       interval (where :pitch pythagorean-tuning)
       (then (->> interval (where :pitch meantone-temperament)))

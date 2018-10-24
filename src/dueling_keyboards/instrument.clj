@@ -30,6 +30,7 @@
       (+ (* 2 (sin-osc 5/8) (sin-osc (* 0.5 freq))))
       (* 3)
       (clip2 0.8)
+      (* 2)
       (rlpf (line:kr 2000 800 dur) 0.8)
       (free-verb :mix 0.5 :damp wet :room room)
       (* (env-gen (adsr attack 0.2 0.5 0.1)

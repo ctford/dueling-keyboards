@@ -110,7 +110,7 @@
      ;            arpeggios
                  ))
       ;(then postscript)
-      with-beat
+      ;with-beat
       (tempo (bpm 150))
       (where :pitch (comp equal-temperament scale/C scale/major)))))
 

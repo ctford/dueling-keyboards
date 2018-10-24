@@ -26,7 +26,6 @@
                            (where :pitch (scale/from %)))
                      [0 0 3 0 4 0]))
       (tempo (bpm 75))
-      (all :attack 0.001)
       (where :pitch (comp equal-temperament scale/G scale/major))
       live/play))
 

@@ -20,10 +20,10 @@
   (let [strum #(->> % (phrase (concat [1/4 1/4] (repeat 1/2))) (then (phrase [4] [nil])))
         chord #(-> chord/triad (chord/root %))]
     (->>
-      (strum (concat (map chord [0 0 0 3 0])))
+      (strum (map chord [0 0 0 3 0]))
       ;(times 2)
-      #_(then (mapthen #(->> (strum (concat [0 0 0 1 2 3 4 3 2]))
-                           (where :pitch (partial + %)))
+    #_(then (mapthen #(->> (strum [0 0 0 1 2 3 4 3 2])
+                           (where :pitch (scale/from %)))
                      [0 0 3 0 4 0]))
       (tempo (bpm 75))
       (all :attack 0.001)

@@ -4,7 +4,7 @@
             [leipzig.melody :refer :all]
             [leipzig.canon :as canon]
             [leipzig.chord :as chord]
-            [leipzig.scale :refer [A B C low sharp flat major]]
+            [leipzig.scale :refer [A B C D E F G low sharp flat major minor]]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
             [dueling-keyboards.tuning :as tuning]
@@ -56,6 +56,7 @@
 
 
 (comment
+
   (sine-wave 400)
 
   (sine-wave 400 399)
@@ -64,8 +65,7 @@
 
 )
 
-; sin(x) + sin(y) = 2 * sin(1/2 * (x+y)) * cos(1/2 * (x-y))
-
+; sin(x) + sin(y) = 2*sin(1/2 * (x+y))*cos(1/2 * (x-y))
 
 
 
@@ -107,7 +107,7 @@
 ;;;;;;;;;;;;;;
 
 
-(defn m->hz [wavelength]
+(defn metres->hz [wavelength]
   (/ speed-of-sound wavelength))
 
 (comment
@@ -116,9 +116,9 @@
 
     (organ 416.66666 500 625)
 
-    (organ (m->hz 6/5) (m->hz 5/5) (m->hz 4/5))
+    (organ (metres->hz 6/5) (metres->hz 5/5) (metres->hz 4/5))
 
-    (organ 400 (* 400 4/3) (* 400 5/3))
+    (organ (* 400 3/3) (* 400 4/3) (* 400 5/3))
 
 )
 
@@ -128,9 +128,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;
-;;; Pythagoras ;;;
-;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Pythagoras' bane ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (def pythagorean-comma
@@ -258,30 +258,30 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Functional composition ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (def row-row
   "A simple melody built from durations and pitches."
-  ; Row, row, row  your boat,
+                ; Row, row, row  your boat,
   (->> (phrase [3/3  3/3  2/3  1/3  3/3]
                [  0    0    0    1    2])
        (then
-         ; Gent-ly   down the  stream,
+                  ; Gent-ly   down the  stream,
          (phrase [2/3  1/3  2/3  1/3  6/3]
                  [  2    1    2    3    4]))
        (then    ; Merrily, merrily, merrily, merrily,
              (phrase (repeat 12 1/3)
                      (mapcat (partial repeat 3) [7 4 2 0])))
        (then
-         ; Life is   but  a    dream!
+                ; Life is   but  a    dream!
          (phrase [2/3  1/3  2/3  1/3  6/3]
                  [  4    3    2    1    0]))
        (canon/canon #(->> ((canon/simple 4) %)
                           (canon/canon (canon/simple 4))))
-       (where :pitch (comp low A major))))
+       (where :pitch (comp low B flat major))))
 
 
 (comment

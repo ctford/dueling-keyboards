@@ -65,7 +65,7 @@
 
 )
 
-; sin(x) + sin(y) = 2*sin(1/2 * (x+y))*cos(1/2 * (x-y))
+; sin(x) + sin(y)  =  2 * sin((x+y)/2) * cos((x-y)/2)
 
 
 

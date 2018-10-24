@@ -239,8 +239,8 @@
 
 (comment
 
-  (let [consonant-fifth (phrase [5 1] [[69 76] nil])
-        dissonant-fifth (phrase [5 1] [[70 77] nil])
+  (let [consonant-fifth (phrase [3 1] [[69 76] nil])
+        dissonant-fifth (phrase [3 1] [[70 77] nil])
         interval consonant-fifth]
     (->>
       interval (where :pitch pythagorean-tuning)

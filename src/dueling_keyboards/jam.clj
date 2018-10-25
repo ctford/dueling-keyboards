@@ -22,9 +22,9 @@
     (->>
       (strum (map chord [0 0 0 3 0]))
       ;(times 2)
-    #_(then (mapthen #(->> (strum [0 0 0 1 2 3 4 3 2])
+    #_(then (mapthen #(->> (strum )
                            (where :pitch (scale/from %)))
-                     [0 0 3 0 4 0]))
+                     [0]))
       (tempo (bpm 75))
       (where :pitch (comp equal-temperament scale/G scale/major))
       live/play))

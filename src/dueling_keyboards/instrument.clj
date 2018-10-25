@@ -31,11 +31,11 @@
       (* 3)
       (clip2 0.8)
       (* 2)
-      (rlpf (line:kr 2000 800 dur) 0.8)
+      (rlpf (line:kr 2000 400 dur) 0.8)
       (free-verb :mix 0.5 :damp wet :room room)
       (* (env-gen (adsr attack 0.2 0.5 0.1)
                   (line:kr 1 0 dur) :action FREE))
-    ;  (rlpf resonance 0.1)
+      ;(rlpf resonance 0.1)
       (* volume 0.5)))
 
 ; Adapted from Overtone core

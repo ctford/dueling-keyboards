@@ -12,29 +12,6 @@ In this talk, I will use a combination of the two kinds of keyboard to explain
 scales, tuning systems and some differences between traditional and algorithmic
 musical performance.
 
-Tuning
-------
-* Pythagoras, ratios and comma
-* Tuning systems
-* Piece in just intonation vs equal temperament
-
-Natural mapping
----------------
-* The keyboard
-* The guitar
-* Baganda pentatonic
-
-Complexity
-----------
-* [Kolmogorov complexity](https://en.wikipedia.org/wiki/Kolmogorov_complexity)
-* Listening as compression
-
-Performance
------------
-* Dueling keyboards
-* I'm not worried
-* GEB
-
 References
 ----------
 * [Aaron, Sam](http://sam.aaron.name/): [Sonic Pi](http://sonic-pi.net/)

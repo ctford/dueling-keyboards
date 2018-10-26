@@ -11,10 +11,10 @@
             [dueling-keyboards.instrument :as inst]))
 
 (defn sine-wave [& freqs]
-  (doseq [f freqs] (inst/sine-wave :vol 0.7 f)))
+  (doseq [f freqs] (inst/sine-wave f :vol 0.7)))
 
 (defn organ [& freqs]
-  (doseq [f freqs] (inst/organ :vol 0.7 f)))
+  (doseq [f freqs] (inst/organ f :vol 0.7)))
 
 ; This makes some ratios work out nicely, and doesn't materially
 ; affect anything even though the real figure is closer to 340.
